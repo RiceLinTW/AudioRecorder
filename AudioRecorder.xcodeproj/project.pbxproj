@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1AC72CB72DB29E74008FE3EF /* AppCore in Frameworks */ = {isa = PBXBuildFile; productRef = 1AC72CB62DB29E74008FE3EF /* AppCore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		1AC72C882DB29AF2008FE3EF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		1AC72C782DB29AF0008FE3EF /* AudioRecorder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AudioRecorder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AC72C872DB29AF2008FE3EF /* AudioRecorderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AudioRecorderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AC72C912DB29AF2008FE3EF /* AudioRecorderUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AudioRecorderUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1AC72CB42DB29E6D008FE3EF /* AppCore */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = AppCore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1AC72CB72DB29E74008FE3EF /* AppCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,9 +81,11 @@
 		1AC72C6F2DB29AF0008FE3EF = {
 			isa = PBXGroup;
 			children = (
+				1AC72CB42DB29E6D008FE3EF /* AppCore */,
 				1AC72C7A2DB29AF0008FE3EF /* AudioRecorder */,
 				1AC72C8A2DB29AF2008FE3EF /* AudioRecorderTests */,
 				1AC72C942DB29AF2008FE3EF /* AudioRecorderUITests */,
+				1AC72CB52DB29E74008FE3EF /* Frameworks */,
 				1AC72C792DB29AF0008FE3EF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,6 +98,13 @@
 				1AC72C912DB29AF2008FE3EF /* AudioRecorderUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		1AC72CB52DB29E74008FE3EF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -112,6 +127,7 @@
 			);
 			name = AudioRecorder;
 			packageProductDependencies = (
+				1AC72CB62DB29E74008FE3EF /* AppCore */,
 			);
 			productName = AudioRecorder;
 			productReference = 1AC72C782DB29AF0008FE3EF /* AudioRecorder.app */;
@@ -558,6 +574,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1AC72CB62DB29E74008FE3EF /* AppCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AppCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1AC72C702DB29AF0008FE3EF /* Project object */;
 }
