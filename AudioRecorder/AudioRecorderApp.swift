@@ -6,28 +6,29 @@
 //
 
 import AppCore
-import SwiftData
 import SwiftUI
 
 @main
 struct AudioRecorderApp: App {
-  var sharedModelContainer: ModelContainer = {
-    let schema = Schema([
-      Item.self,
-    ])
-    let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
+  private let audioManager = AudioManager()
+  private let repository: SwiftDataRecordingRepository
+  
+  init() {
     do {
-      return try ModelContainer(for: schema, configurations: [modelConfiguration])
+      repository = try SwiftDataRecordingRepository()
     } catch {
-      fatalError("Could not create ModelContainer: \(error)")
+      fatalError("Failed to create repository: \(error)")
     }
-  }()
-
+  }
+  
   var body: some Scene {
     WindowGroup {
-      ContentView()
+      RecordingListView(viewModel: RecordingListViewModel(
+        useCase: RecordingInteractor(
+          repository: repository,
+          audioManager: audioManager
+        )
+      ))
     }
-    .modelContainer(sharedModelContainer)
   }
 }

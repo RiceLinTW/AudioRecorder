@@ -2,10 +2,10 @@ import Foundation
 import AVFoundation
 
 public enum AudioError: Error {
-  case recordPermissionDenied
   case recordingFailed
   case playbackFailed
   case fileNotFound
+  case permissionDenied
 }
 
 public final class AudioManager: NSObject, ObservableObject {
@@ -27,35 +27,32 @@ public final class AudioManager: NSObject, ObservableObject {
   }
   
   // MARK: - Public Methods
-  public func requestPermission() async -> Bool {
-    return await withCheckedContinuation { continuation in
-      AVAudioSession.sharedInstance().requestRecordPermission { granted in
-        continuation.resume(returning: granted)
-      }
+  public func requestPermission() async throws {
+    let granted = await AVAudioApplication.requestRecordPermission()
+    guard granted else {
+      throw AudioError.permissionDenied
     }
   }
   
   public func startRecording(fileName: String) async throws {
-    guard await requestPermission() else {
-      throw AudioError.recordPermissionDenied
-    }
-    
-    let fileURL = getDocumentsDirectory().appendingPathComponent(fileName)
-    let settings: [String: Any] = [
-      AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-      AVSampleRateKey: 44100.0,
-      AVNumberOfChannelsKey: 2,
-      AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
-    ]
-    
     do {
+      try await requestPermission()
+      
+      let fileURL = getDocumentsDirectory().appendingPathComponent(fileName)
+      let settings: [String: Any] = [
+        AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+        AVSampleRateKey: 44100.0,
+        AVNumberOfChannelsKey: 2,
+        AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+      ]
+      
       audioRecorder = try AVAudioRecorder(url: fileURL, settings: settings)
       audioRecorder?.delegate = self
       audioRecorder?.record()
       isRecording = true
       startTimer()
     } catch {
-      throw AudioError.recordingFailed
+      throw error is AudioError ? error : AudioError.recordingFailed
     }
   }
   
