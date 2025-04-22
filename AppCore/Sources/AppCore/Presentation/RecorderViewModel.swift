@@ -1,9 +1,11 @@
 import Foundation
 import AVFoundation
+import SwiftData
 
 @MainActor
 class RecorderViewModel: ObservableObject {
   private let repository: AudioRecorderRepository
+  private let recordingStore: RecordingStoreActor
   private var audioPlayer: AVAudioPlayer?
   private var timer: Timer?
   
@@ -11,9 +13,21 @@ class RecorderViewModel: ObservableObject {
   @Published var isPlaying = false
   @Published var recordingTime: TimeInterval = 0
   @Published var currentRecording: AudioRecording?
+  @Published var recordings: [RecordingModel] = []
+  @Published var error: Error?
   
-  init(repository: AudioRecorderRepository) async {
+  init(repository: AudioRecorderRepository, recordingStore: RecordingStoreActor) async {
     self.repository = repository
+    self.recordingStore = recordingStore
+    await loadRecordings()
+  }
+  
+  private func loadRecordings() async {
+    do {
+      recordings = try await recordingStore.fetchAll()
+    } catch {
+      self.error = error
+    }
   }
   
   func startRecording() {
@@ -28,12 +42,22 @@ class RecorderViewModel: ObservableObject {
         }
       }
     } catch {
-      print("錄音失敗: \(error.localizedDescription)")
+      self.error = error
     }
   }
   
   func stopRecording() {
-    currentRecording = repository.stopRecording()
+    if let recording = repository.stopRecording() {
+      currentRecording = recording
+      Task {
+        do {
+          try await recordingStore.save(recording)
+          await loadRecordings()
+        } catch {
+          self.error = error
+        }
+      }
+    }
     isRecording = false
     timer?.invalidate()
   }
@@ -52,7 +76,7 @@ class RecorderViewModel: ObservableObject {
       audioPlayer?.play()
       isPlaying = true
     } catch {
-      print("播放失敗: \(error.localizedDescription)")
+      self.error = error
     }
   }
   
@@ -67,7 +91,16 @@ class RecorderViewModel: ObservableObject {
     }
     
     if let recording = currentRecording {
-      try? repository.deleteRecording(recording)
+      Task {
+        do {
+          if let model = try await recordingStore.find(by: recording.id) {
+            try await recordingStore.delete(model)
+            await loadRecordings()
+          }
+        } catch {
+          self.error = error
+        }
+      }
     }
     
     currentRecording = nil
