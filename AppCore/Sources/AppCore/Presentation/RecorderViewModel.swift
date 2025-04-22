@@ -6,20 +6,25 @@ import SwiftData
 class RecorderViewModel: ObservableObject {
   private let repository: AudioRecorderRepository
   private let recordingStore: RecordingStoreActor
+  private let transcriptionService: TranscriptionService
   private var audioPlayer: AVAudioPlayer?
   private var timer: Timer?
   
   @Published var isRecording = false
   @Published var isPlaying = false
+  @Published var isTranscribing = false
   @Published var recordingTime: TimeInterval = 0
   @Published var currentRecording: AudioRecording?
   @Published var recordings: [RecordingModel] = []
   @Published var error: Error?
   
-  init(repository: AudioRecorderRepository, recordingStore: RecordingStoreActor) async {
+  init(repository: AudioRecorderRepository, recordingStore: RecordingStoreActor) {
     self.repository = repository
     self.recordingStore = recordingStore
-    await loadRecordings()
+    self.transcriptionService = TranscriptionService(recordingStore: recordingStore)
+    Task {
+      await loadRecordings()
+    }
   }
   
   private func loadRecordings() async {
@@ -51,10 +56,17 @@ class RecorderViewModel: ObservableObject {
       currentRecording = recording
       Task {
         do {
-          try await recordingStore.save(recording)
+          let savedRecording = try await recordingStore.save(recording)
+          await loadRecordings()
+          
+          // 自動開始轉錄
+          isTranscribing = true
+          try await transcriptionService.transcribe(recording: savedRecording)
+          isTranscribing = false
           await loadRecordings()
         } catch {
           self.error = error
+          isTranscribing = false
         }
       }
     }

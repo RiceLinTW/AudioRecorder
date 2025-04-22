@@ -12,6 +12,6 @@ class ViewModelFactory {
   }
   
   func makeRecorderViewModel() async -> RecorderViewModel {
-    await RecorderViewModel(repository: repository, recordingStore: recordingStore)
+    RecorderViewModel(repository: repository, recordingStore: recordingStore)
   }
 } 
