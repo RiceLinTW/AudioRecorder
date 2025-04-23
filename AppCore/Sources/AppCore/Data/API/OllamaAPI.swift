@@ -11,6 +11,14 @@ enum OllamaAPIError: Error {
 struct OllamaAPI {
   // 這邊需要再配合host修改
   private let baseURL = "https://8d53-118-169-19-211.ngrok-free.app"
+  private let session: URLSession
+  
+  init() {
+    let config = URLSessionConfiguration.default
+    config.timeoutIntervalForRequest = 300  // 5 分鐘
+    config.timeoutIntervalForResource = 300 // 5 分鐘
+    self.session = URLSession(configuration: config)
+  }
   
   struct GenerateRequest: Codable {
     let model: String
@@ -47,7 +55,7 @@ struct OllamaAPI {
     let encoder = JSONEncoder()
     request.httpBody = try encoder.encode(generateRequest)
     
-    let (data, response) = try await URLSession.shared.data(for: request)
+    let (data, response) = try await session.data(for: request)
     
     guard let httpResponse = response as? HTTPURLResponse else {
       throw OllamaAPIError.invalidResponse
