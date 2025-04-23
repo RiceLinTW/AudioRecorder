@@ -48,24 +48,26 @@ class RecorderViewModel: ObservableObject {
   }
   
   func startRecording() {
-    do {
-      // 開始背景任務
-      backgroundTask = UIApplication.shared.beginBackgroundTask {
-        UIApplication.shared.endBackgroundTask(self.backgroundTask)
-        self.backgroundTask = .invalid
-      }
-      
-      try repository.startRecording()
-      isRecording = true
-      recordingTime = 0
-      
-      timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-        Task { @MainActor [weak self] in
-          self?.recordingTime += 0.1
+    Task {
+      do {
+        // 開始背景任務
+        backgroundTask = UIApplication.shared.beginBackgroundTask {
+          UIApplication.shared.endBackgroundTask(self.backgroundTask)
+          self.backgroundTask = .invalid
         }
+        
+        try await repository.startRecording()
+        isRecording = true
+        recordingTime = 0
+        
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+          Task { @MainActor [weak self] in
+            self?.recordingTime += 0.1
+          }
+        }
+      } catch {
+        self.error = RecorderError.recording(error.localizedDescription)
       }
-    } catch {
-      self.error = RecorderError.recording(error.localizedDescription)
     }
   }
   
