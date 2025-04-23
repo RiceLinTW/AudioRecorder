@@ -87,4 +87,9 @@ final class TranscriptionService: @unchecked Sendable {
     
     print("✅ 摘要完成")
   }
+  
+  func updateSummary(recording: RecordingModel, summary: String) async throws {
+    recording.summary = summary
+    try await recordingStore.update(recording)
+  }
 } 

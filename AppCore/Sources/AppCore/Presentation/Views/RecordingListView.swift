@@ -6,6 +6,7 @@ struct RecordingListView: View {
   let onDelete: (RecordingModel) -> Void
   let onTranscribe: (RecordingModel) async throws -> Void
   let onSummarize: (RecordingModel) async throws -> Void
+  let onUpdateSummary: (RecordingModel, String) async throws -> Void
   @State private var errorMessage: String?
   @State private var showError = false
   
@@ -28,6 +29,16 @@ struct RecordingListView: View {
             Task {
               do {
                 try await onSummarize(recording)
+              } catch {
+                errorMessage = error.localizedDescription
+                showError = true
+              }
+            }
+          },
+          onUpdateSummary: { summary in
+            Task {
+              do {
+                try await onUpdateSummary(recording, summary)
               } catch {
                 errorMessage = error.localizedDescription
                 showError = true
@@ -63,6 +74,10 @@ struct RecordingItemView: View {
   let recording: RecordingModel
   let onTranscribe: () -> Void
   let onSummarize: () -> Void
+  let onUpdateSummary: (String) -> Void
+  @State private var showingSummaryEdit = false
+  @State private var errorMessage: String?
+  @State private var showError = false
   
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
@@ -84,11 +99,30 @@ struct RecordingItemView: View {
       
       if let summary = recording.summary {
         VStack(alignment: .leading, spacing: 4) {
-          Text("重點摘要")
-            .font(.caption)
-            .foregroundStyle(.secondary)
+          HStack {
+            Text("重點摘要")
+              .font(.caption)
+              .foregroundStyle(.secondary)
+            Spacer()
+            Button {
+              showingSummaryEdit = true
+            } label: {
+              Image(systemName: "pencil")
+                .font(.body)
+                .padding(8)
+                .background(.secondary.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .overlay(
+                  RoundedRectangle(cornerRadius: 8)
+                    .stroke(.secondary.opacity(0.2), lineWidth: 1)
+                )
+                .shadow(color: .black.opacity(0.1), radius: 1, y: 1)
+            }
+            .buttonStyle(.plain)
+          }
           Text(summary)
             .font(.callout)
+            .lineLimit(3)
             .padding(8)
             .background(Color.secondary.opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -134,5 +168,26 @@ struct RecordingItemView: View {
       .foregroundStyle(.secondary)
     }
     .padding(.vertical, 4)
+    .sheet(isPresented: $showingSummaryEdit) {
+      SummaryEditView(
+        recording: recording,
+        onSave: { newSummary in
+          onUpdateSummary(newSummary)
+          showingSummaryEdit = false
+        },
+        onCancel: {
+          showingSummaryEdit = false
+        }
+      )
+    }
+    .alert("錯誤", isPresented: $showError) {
+      Button("確定") {
+        errorMessage = nil
+      }
+    } message: {
+      if let message = errorMessage {
+        Text(message)
+      }
+    }
   }
 } 

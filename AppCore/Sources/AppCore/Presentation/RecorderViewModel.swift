@@ -161,4 +161,9 @@ class RecorderViewModel: ObservableObject {
     let milliseconds = Int((time.truncatingRemainder(dividingBy: 1)) * 10)
     return String(format: "%02d:%02d.%01d", minutes, seconds, milliseconds)
   }
+  
+  func updateSummary(_ recording: RecordingModel, summary: String) async throws {
+    try await transcriptionService.updateSummary(recording: recording, summary: summary)
+    await loadRecordings()
+  }
 } 
