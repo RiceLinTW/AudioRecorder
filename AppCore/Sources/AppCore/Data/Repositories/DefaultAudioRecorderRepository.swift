@@ -25,13 +25,16 @@ class DefaultAudioRecorderRepository: AudioRecorderRepository {
     try audioSession.setActive(true)
     
     let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-    let audioFilename = documentsPath.appendingPathComponent("\(UUID().uuidString).m4a")
+    let audioFilename = documentsPath.appendingPathComponent("\(UUID().uuidString).wav")
     currentRecordingURL = audioFilename
     
-    let settings = [
-      AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-      AVSampleRateKey: 44100,
+    let settings: [String: Any] = [
+      AVFormatIDKey: Int(kAudioFormatLinearPCM),
+      AVSampleRateKey: 44100.0,
       AVNumberOfChannelsKey: 2,
+      AVLinearPCMBitDepthKey: 16,
+      AVLinearPCMIsFloatKey: false,
+      AVLinearPCMIsBigEndianKey: false,
       AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
     ]
     

@@ -16,7 +16,7 @@ class RecorderViewModel: ObservableObject {
   @Published var recordingTime: TimeInterval = 0
   @Published var currentRecording: AudioRecording?
   @Published var recordings: [RecordingModel] = []
-  @Published var error: Error?
+  @Published var error: RecorderError?
   
   init(repository: AudioRecorderRepository, recordingStore: RecordingStoreActor) {
     self.repository = repository
@@ -27,11 +27,20 @@ class RecorderViewModel: ObservableObject {
     }
   }
   
+  func deleteRecording(_ recording: RecordingModel) async throws {
+    do {
+      try await recordingStore.delete(recording)
+      await loadRecordings()
+    } catch {
+      throw RecorderError.deletion(error.localizedDescription)
+    }
+  }
+  
   private func loadRecordings() async {
     do {
       recordings = try await recordingStore.fetchAll()
     } catch {
-      self.error = error
+      self.error = RecorderError.recording(error.localizedDescription)
     }
   }
   
@@ -47,7 +56,7 @@ class RecorderViewModel: ObservableObject {
         }
       }
     } catch {
-      self.error = error
+      self.error = RecorderError.recording(error.localizedDescription)
     }
   }
   
@@ -65,7 +74,7 @@ class RecorderViewModel: ObservableObject {
           isTranscribing = false
           await loadRecordings()
         } catch {
-          self.error = error
+          self.error = RecorderError.transcription(error.localizedDescription)
           isTranscribing = false
         }
       }
@@ -88,7 +97,7 @@ class RecorderViewModel: ObservableObject {
       audioPlayer?.play()
       isPlaying = true
     } catch {
-      self.error = error
+      self.error = RecorderError.playback(error.localizedDescription)
     }
   }
   
@@ -110,7 +119,7 @@ class RecorderViewModel: ObservableObject {
             await loadRecordings()
           }
         } catch {
-          self.error = error
+          self.error = RecorderError.deletion(error.localizedDescription)
         }
       }
     }

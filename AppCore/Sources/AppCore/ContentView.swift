@@ -13,6 +13,8 @@ public struct ContentView: View {
   
   public var body: some View {
     RecorderView()
+      .preferredColorScheme(.dark)
+      .tint(.orange)
   }
 }
 

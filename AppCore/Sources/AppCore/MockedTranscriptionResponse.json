@@ -1,0 +1,18 @@
+{
+    "statusCode": "10000",
+    "message": "success",
+    "data": {
+        "status": "Completed",
+        "progress": "100.00%",
+        "exception_traceback": "",
+        "text": "",
+        "filePaths": {
+            "audio_path": "outputs/bccf0a4d-2a30-4279-86f3-36b9434ba079/bccf0a4d-2a30-4279-86f3-36b9434ba079.wav",
+            "srt_path": "outputs/bccf0a4d-2a30-4279-86f3-36b9434ba079/bccf0a4d-2a30-4279-86f3-36b9434ba079.srt",
+            "tsv_path": "outputs/bccf0a4d-2a30-4279-86f3-36b9434ba079/bccf0a4d-2a30-4279-86f3-36b9434ba079.tsv",
+            "txt_path": "outputs/bccf0a4d-2a30-4279-86f3-36b9434ba079/bccf0a4d-2a30-4279-86f3-36b9434ba079.txt",
+            "vtt_path": "outputs/bccf0a4d-2a30-4279-86f3-36b9434ba079/bccf0a4d-2a30-4279-86f3-36b9434ba079.vtt",
+            "archive_path": "outputs/bccf0a4d-2a30-4279-86f3-36b9434ba079/archive.zip"
+        }
+    }
+}

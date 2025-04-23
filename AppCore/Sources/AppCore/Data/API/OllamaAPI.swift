@@ -9,7 +9,8 @@ enum OllamaAPIError: Error {
 }
 
 struct OllamaAPI {
-  private let baseURL = "http://localhost:11434"
+  // 這邊需要再配合host修改
+  private let baseURL = "https://8d53-118-169-19-211.ngrok-free.app"
   
   struct GenerateRequest: Codable {
     let model: String
@@ -23,7 +24,7 @@ struct OllamaAPI {
     let done: Bool
   }
   
-  func generateSummary(text: String, model: String = "mistral") async throws -> String {
+  func generateSummary(text: String, model: String = "llama2:7b") async throws -> String {
     let url = URL(string: "\(baseURL)/api/generate")!
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
@@ -36,7 +37,7 @@ struct OllamaAPI {
     
     請用條列式回答，每個重點不要超過 30 字。最多不要超過 5 個重點。
     """
-    
+
     let generateRequest = GenerateRequest(
       model: model,
       prompt: prompt,
@@ -55,7 +56,7 @@ struct OllamaAPI {
     guard httpResponse.statusCode == 200 else {
       throw OllamaAPIError.apiError("HTTP \(httpResponse.statusCode)")
     }
-    
+
     let result = try JSONDecoder().decode(GenerateResponse.self, from: data)
     return result.response
   }
