@@ -73,11 +73,16 @@ final class TranscriptionService: @unchecked Sendable {
     
     print("🎯 開始摘要: \(recording.title)")
     
+    // 更新狀態
+    recording.isSummarizing = true
+    try await recordingStore.update(recording)
+    
     // 生成摘要
     let summary = try await ollamaAPI.generateSummary(text: transcript)
     
     // 更新資料庫
     recording.summary = summary
+    recording.isSummarizing = false
     try await recordingStore.update(recording)
     
     print("✅ 摘要完成")

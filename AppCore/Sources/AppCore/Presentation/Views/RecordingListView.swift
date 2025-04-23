@@ -114,11 +114,20 @@ struct RecordingItemView: View {
             .tint(.blue)
           }
         } else if recording.summary == nil {
-          Button(action: onSummarize) {
-            Label("摘要", systemImage: "text.redaction")
+          if recording.isSummarizing {
+            HStack(spacing: 4) {
+              ProgressView()
+                .controlSize(.small)
+              Text("摘要生成中...")
+                .font(.caption)
+            }
+          } else {
+            Button(action: onSummarize) {
+              Label("摘要", systemImage: "text.redaction")
+            }
+            .buttonStyle(.bordered)
+            .tint(.green)
           }
-          .buttonStyle(.bordered)
-          .tint(.green)
         }
       }
       .font(.caption)
