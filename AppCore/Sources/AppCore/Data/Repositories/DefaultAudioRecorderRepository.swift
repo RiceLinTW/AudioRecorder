@@ -48,8 +48,12 @@ class DefaultAudioRecorderRepository: AudioRecorderRepository {
   
   func stopRecording() -> AudioRecording? {
     guard let url = currentRecordingURL else { return nil }
-    audioRecorder?.stop()
+    
     let duration = audioRecorder?.currentTime ?? 0
+    audioRecorder?.stop()
+    audioRecorder = nil
+    currentRecordingURL = nil
+    
     return AudioRecording(url: url, duration: duration)
   }
   
