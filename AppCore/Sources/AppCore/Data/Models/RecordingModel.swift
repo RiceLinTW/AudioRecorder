@@ -7,18 +7,24 @@ final class RecordingModel: @unchecked Sendable {
   var title: String
   var createdAt: Date
   var duration: TimeInterval
-  var filePath: String
+  var filename: String
   var transcript: String?
   var summary: String?
   var progress: String?
   var isSummarizing: Bool = false
+  
+  var filePath: String {
+    FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+      .appendingPathComponent(filename)
+      .path
+  }
   
   init(
     id: UUID = UUID(),
     title: String,
     createdAt: Date = Date(),
     duration: TimeInterval,
-    filePath: String,
+    filename: String,
     transcript: String? = nil,
     summary: String? = nil,
     progress: String? = nil,
@@ -28,7 +34,7 @@ final class RecordingModel: @unchecked Sendable {
     self.title = title
     self.createdAt = createdAt
     self.duration = duration
-    self.filePath = filePath
+    self.filename = filename
     self.transcript = transcript
     self.summary = summary
     self.progress = progress

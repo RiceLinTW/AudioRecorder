@@ -23,7 +23,7 @@ actor RecordingStoreActor {
       title: recording.url.lastPathComponent,
       createdAt: recording.createdAt,
       duration: recording.duration,
-      filePath: recording.url.path
+      filename: recording.url.lastPathComponent
     )
     modelContext.insert(model)
     try modelContext.save()

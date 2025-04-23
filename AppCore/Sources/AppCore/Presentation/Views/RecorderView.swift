@@ -41,6 +41,9 @@ public struct RecorderView: View {
           },
           onUpdateSummary: { recording, summary in
             try await viewModel.updateSummary(recording, summary: summary)
+          },
+          onPlay: { recording in
+            try await viewModel.playRecording(recording)
           }
         )
         

@@ -7,6 +7,7 @@ struct RecordingListView: View {
   let onTranscribe: (RecordingModel) async throws -> Void
   let onSummarize: (RecordingModel) async throws -> Void
   let onUpdateSummary: (RecordingModel, String) async throws -> Void
+  let onPlay: (RecordingModel) async throws -> Void
   @State private var errorMessage: String?
   @State private var showError = false
   
@@ -44,6 +45,16 @@ struct RecordingListView: View {
                 showError = true
               }
             }
+          },
+          onPlay: {
+            Task {
+              do {
+                try await onPlay(recording)
+              } catch {
+                errorMessage = error.localizedDescription
+                showError = true
+              }
+            }
           }
         )
         .contentShape(Rectangle())
@@ -75,6 +86,7 @@ struct RecordingItemView: View {
   let onTranscribe: () -> Void
   let onSummarize: () -> Void
   let onUpdateSummary: (String) -> Void
+  let onPlay: () -> Void
   @State private var showingSummaryEdit = false
   @State private var errorMessage: String?
   @State private var showError = false
@@ -168,6 +180,10 @@ struct RecordingItemView: View {
       .foregroundStyle(.secondary)
     }
     .padding(.vertical, 4)
+    .contentShape(Rectangle())
+    .onTapGesture {
+      onPlay()
+    }
     .sheet(isPresented: $showingSummaryEdit) {
       SummaryEditView(
         recording: recording,

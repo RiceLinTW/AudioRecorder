@@ -166,4 +166,29 @@ class RecorderViewModel: ObservableObject {
     try await transcriptionService.updateSummary(recording: recording, summary: summary)
     await loadRecordings()
   }
+  
+  func playRecording(_ recording: RecordingModel) async throws {
+    if isPlaying {
+      stopPlayback()
+    }
+    
+    do {
+      let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+      let url = documentsPath.appendingPathComponent(recording.filename)
+      print("Playing audio from: \(url.path)")
+      
+      audioPlayer = try AVAudioPlayer(contentsOf: url)
+      audioPlayer?.delegate = AVPlayerObserver.shared
+      AVPlayerObserver.shared.onEnd = { [weak self] in
+        Task { @MainActor [weak self] in
+          self?.isPlaying = false
+        }
+      }
+      audioPlayer?.play()
+      isPlaying = true
+    } catch {
+      print("播放錯誤: \(error)")
+      throw RecorderError.playback(error.localizedDescription)
+    }
+  }
 } 

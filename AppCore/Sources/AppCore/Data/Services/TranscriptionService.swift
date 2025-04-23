@@ -31,7 +31,9 @@ final class TranscriptionService: @unchecked Sendable {
     print("🎯 開始轉錄: \(recording.title)")
     
     // 上傳音檔
-    let task = try await hephAPI.uploadAudio(fileURL: URL(filePath: recording.filePath))
+    let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    let url = documentsPath.appendingPathComponent(recording.filename)
+    let task = try await hephAPI.uploadAudio(fileURL: url)
     
     // 等待轉錄完成
     var status = try await hephAPI.checkStatus(taskID: task.data.task_id)
