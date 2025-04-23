@@ -4,15 +4,41 @@ struct RecordingListView: View {
   let recordings: [RecordingModel]
   let onSelect: (RecordingModel) -> Void
   let onDelete: (RecordingModel) -> Void
+  let onTranscribe: (RecordingModel) async throws -> Void
+  let onSummarize: (RecordingModel) async throws -> Void
+  @State private var errorMessage: String?
+  @State private var showError = false
   
   var body: some View {
     List {
       ForEach(recordings) { recording in
-        RecordingItemView(recording: recording)
-          .contentShape(Rectangle())
-          .onTapGesture {
-            onSelect(recording)
+        RecordingItemView(
+          recording: recording,
+          onTranscribe: {
+            Task {
+              do {
+                try await onTranscribe(recording)
+              } catch {
+                errorMessage = error.localizedDescription
+                showError = true
+              }
+            }
+          },
+          onSummarize: {
+            Task {
+              do {
+                try await onSummarize(recording)
+              } catch {
+                errorMessage = error.localizedDescription
+                showError = true
+              }
+            }
           }
+        )
+        .contentShape(Rectangle())
+        .onTapGesture {
+          onSelect(recording)
+        }
       }
       .onDelete { indexSet in
         indexSet.forEach { index in
@@ -21,11 +47,22 @@ struct RecordingListView: View {
       }
     }
     .listStyle(.plain)
+    .alert("錯誤", isPresented: $showError) {
+      Button("確定") {
+        errorMessage = nil
+      }
+    } message: {
+      if let message = errorMessage {
+        Text(message)
+      }
+    }
   }
 }
 
 struct RecordingItemView: View {
   let recording: RecordingModel
+  let onTranscribe: () -> Void
+  let onSummarize: () -> Void
   
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
@@ -62,8 +99,17 @@ struct RecordingItemView: View {
         Label("\(recording.duration.formatted(.number.precision(.fractionLength(1)))) 秒", systemImage: "clock")
         
         if recording.transcript == nil {
-          Label("轉錄中", systemImage: "arrow.triangle.2.circlepath")
-            .foregroundStyle(.blue)
+          Button(action: onTranscribe) {
+            Label("轉錄", systemImage: "text.bubble")
+          }
+          .buttonStyle(.bordered)
+          .tint(.blue)
+        } else if recording.summary == nil {
+          Button(action: onSummarize) {
+            Label("摘要", systemImage: "text.redaction")
+          }
+          .buttonStyle(.bordered)
+          .tint(.green)
         }
       }
       .font(.caption)

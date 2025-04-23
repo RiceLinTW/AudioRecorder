@@ -32,6 +32,12 @@ public struct RecorderView: View {
                 showError = true
               }
             }
+          },
+          onTranscribe: { recording in
+            try await viewModel.startTranscription(recording)
+          },
+          onSummarize: { recording in
+            try await viewModel.startSummary(recording)
           }
         )
         

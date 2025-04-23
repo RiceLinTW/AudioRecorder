@@ -74,26 +74,10 @@ class RecorderViewModel: ObservableObject {
       currentRecording = recording
       Task {
         do {
-          let savedRecording = try await recordingStore.save(recording)
+          _ = try await recordingStore.save(recording)
           await loadRecordings()
-          
-          // 開始背景轉錄
-          isTranscribing = true
-          try await transcriptionService.transcribe(recording: savedRecording)
-          isTranscribing = false
-          await loadRecordings()
-          
-          // 發送通知
-          notificationService.scheduleTranscriptionNotification(title: savedRecording.title)
-          
-          // 自動開始摘要
-          if let transcript = savedRecording.transcript {
-            try await transcriptionService.summarize(recording: savedRecording, transcript: transcript)
-            notificationService.scheduleSummaryNotification(title: savedRecording.title)
-          }
         } catch {
-          self.error = RecorderError.transcription(error.localizedDescription)
-          isTranscribing = false
+          self.error = RecorderError.recording(error.localizedDescription)
         }
       }
     }
@@ -105,6 +89,25 @@ class RecorderViewModel: ObservableObject {
       UIApplication.shared.endBackgroundTask(backgroundTask)
       backgroundTask = .invalid
     }
+  }
+  
+  func startTranscription(_ recording: RecordingModel) async throws {
+    isTranscribing = true
+    defer { isTranscribing = false }
+    
+    try await transcriptionService.transcribe(recording: recording)
+    await loadRecordings()
+    notificationService.scheduleTranscriptionNotification(title: recording.title)
+  }
+  
+  func startSummary(_ recording: RecordingModel) async throws {
+    guard let transcript = recording.transcript else {
+      throw RecorderError.transcription("請先進行轉錄")
+    }
+    
+    try await transcriptionService.summarize(recording: recording, transcript: transcript)
+    await loadRecordings()
+    notificationService.scheduleSummaryNotification(title: recording.title)
   }
   
   func startPlayback() {

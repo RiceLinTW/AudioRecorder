@@ -1,6 +1,7 @@
 import UIKit
 
-class TranscriptionService {
+@MainActor
+final class TranscriptionService: @unchecked Sendable {
   private let recordingStore: RecordingStoreActor
   private let hephAPI = HephAPI()
   private let ollamaAPI = OllamaAPI()
@@ -12,15 +13,18 @@ class TranscriptionService {
   
   func transcribe(recording: RecordingModel) async throws {
     // 開始背景任務
-    backgroundTask = UIApplication.shared.beginBackgroundTask {
+    backgroundTask = UIApplication.shared.beginBackgroundTask { [weak self] in
+      guard let self else { return }
       UIApplication.shared.endBackgroundTask(self.backgroundTask)
       self.backgroundTask = .invalid
     }
     
     defer {
       if backgroundTask != .invalid {
-        UIApplication.shared.endBackgroundTask(backgroundTask)
-        backgroundTask = .invalid
+        Task { @MainActor in
+          UIApplication.shared.endBackgroundTask(backgroundTask)
+          backgroundTask = .invalid
+        }
       }
     }
     
@@ -49,15 +53,18 @@ class TranscriptionService {
   
   func summarize(recording: RecordingModel, transcript: String) async throws {
     // 開始背景任務
-    backgroundTask = UIApplication.shared.beginBackgroundTask {
+    backgroundTask = UIApplication.shared.beginBackgroundTask { [weak self] in
+      guard let self else { return }
       UIApplication.shared.endBackgroundTask(self.backgroundTask)
       self.backgroundTask = .invalid
     }
     
     defer {
       if backgroundTask != .invalid {
-        UIApplication.shared.endBackgroundTask(backgroundTask)
-        backgroundTask = .invalid
+        Task { @MainActor in
+          UIApplication.shared.endBackgroundTask(backgroundTask)
+          backgroundTask = .invalid
+        }
       }
     }
     
