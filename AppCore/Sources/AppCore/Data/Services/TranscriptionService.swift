@@ -39,6 +39,8 @@ final class TranscriptionService: @unchecked Sendable {
       try await Task.sleep(for: .seconds(5))
       status = try await hephAPI.checkStatus(taskID: task.data.task_id)
       print("📊 轉錄進度: \(status.data.progress)")
+      recording.progress = status.data.progress
+      try await recordingStore.update(recording)
     }
     
     // 取得結果
@@ -46,6 +48,7 @@ final class TranscriptionService: @unchecked Sendable {
     
     // 更新資料庫
     recording.transcript = result.text
+    recording.progress = nil
     try await recordingStore.update(recording)
     
     print("✅ 轉錄完成")

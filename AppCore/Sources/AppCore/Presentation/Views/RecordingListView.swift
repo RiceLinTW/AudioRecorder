@@ -99,11 +99,20 @@ struct RecordingItemView: View {
         Label("\(recording.duration.formatted(.number.precision(.fractionLength(1)))) 秒", systemImage: "clock")
         
         if recording.transcript == nil {
-          Button(action: onTranscribe) {
-            Label("轉錄", systemImage: "text.bubble")
+          if let progress = recording.progress {
+            HStack(spacing: 4) {
+              ProgressView()
+                .controlSize(.small)
+              Text(progress)
+                .font(.caption)
+            }
+          } else {
+            Button(action: onTranscribe) {
+              Label("轉錄", systemImage: "text.bubble")
+            }
+            .buttonStyle(.bordered)
+            .tint(.blue)
           }
-          .buttonStyle(.bordered)
-          .tint(.blue)
         } else if recording.summary == nil {
           Button(action: onSummarize) {
             Label("摘要", systemImage: "text.redaction")

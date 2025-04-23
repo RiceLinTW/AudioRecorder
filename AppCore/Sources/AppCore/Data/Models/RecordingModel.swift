@@ -10,6 +10,7 @@ final class RecordingModel: @unchecked Sendable {
   var filePath: String
   var transcript: String?
   var summary: String?
+  var progress: String?
   
   init(
     id: UUID = UUID(),
@@ -18,7 +19,8 @@ final class RecordingModel: @unchecked Sendable {
     duration: TimeInterval,
     filePath: String,
     transcript: String? = nil,
-    summary: String? = nil
+    summary: String? = nil,
+    progress: String? = nil
   ) {
     self.id = id
     self.title = title
@@ -27,5 +29,6 @@ final class RecordingModel: @unchecked Sendable {
     self.filePath = filePath
     self.transcript = transcript
     self.summary = summary
+    self.progress = progress
   }
 } 
