@@ -13,8 +13,12 @@ class DefaultAudioRecorderRepository: AudioRecorderRepository {
   private func setupAudioSession() {
     let audioSession = AVAudioSession.sharedInstance()
     do {
-      try audioSession.setCategory(.playAndRecord, mode: .default)
-      try audioSession.setActive(true)
+      try audioSession.setCategory(
+        .playAndRecord,
+        mode: .default,
+        options: [.allowBluetooth, .defaultToSpeaker, .mixWithOthers]
+      )
+      try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
     } catch {
       print("設置音頻會話失敗: \(error.localizedDescription)")
     }

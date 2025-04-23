@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import AVFoundation
 import SwiftData
 
@@ -7,8 +8,10 @@ class RecorderViewModel: ObservableObject {
   private let repository: AudioRecorderRepository
   private let recordingStore: RecordingStoreActor
   private let transcriptionService: TranscriptionService
+  private let notificationService = NotificationService.shared
   private var audioPlayer: AVAudioPlayer?
   private var timer: Timer?
+  private var backgroundTask: UIBackgroundTaskIdentifier = .invalid
   
   @Published var isRecording = false
   @Published var isPlaying = false
@@ -46,6 +49,12 @@ class RecorderViewModel: ObservableObject {
   
   func startRecording() {
     do {
+      // 開始背景任務
+      backgroundTask = UIApplication.shared.beginBackgroundTask {
+        UIApplication.shared.endBackgroundTask(self.backgroundTask)
+        self.backgroundTask = .invalid
+      }
+      
       try repository.startRecording()
       isRecording = true
       recordingTime = 0
@@ -68,11 +77,20 @@ class RecorderViewModel: ObservableObject {
           let savedRecording = try await recordingStore.save(recording)
           await loadRecordings()
           
-          // 自動開始轉錄
+          // 開始背景轉錄
           isTranscribing = true
           try await transcriptionService.transcribe(recording: savedRecording)
           isTranscribing = false
           await loadRecordings()
+          
+          // 發送通知
+          notificationService.scheduleTranscriptionNotification(title: savedRecording.title)
+          
+          // 自動開始摘要
+          if let transcript = savedRecording.transcript {
+            try await transcriptionService.summarize(recording: savedRecording, transcript: transcript)
+            notificationService.scheduleSummaryNotification(title: savedRecording.title)
+          }
         } catch {
           self.error = RecorderError.transcription(error.localizedDescription)
           isTranscribing = false
@@ -81,6 +99,12 @@ class RecorderViewModel: ObservableObject {
     }
     isRecording = false
     timer?.invalidate()
+    
+    // 結束背景任務
+    if backgroundTask != .invalid {
+      UIApplication.shared.endBackgroundTask(backgroundTask)
+      backgroundTask = .invalid
+    }
   }
   
   func startPlayback() {

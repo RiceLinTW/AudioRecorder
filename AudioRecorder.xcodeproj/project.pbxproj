@@ -34,9 +34,22 @@
 		1AC72CB42DB29E6D008FE3EF /* AppCore */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = AppCore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		1A323E3B2DB8C75700C4AAC3 /* Exceptions for "AudioRecorder" folder in "AudioRecorder" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 1AC72C772DB29AF0008FE3EF /* AudioRecorder */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		1AC72C7A2DB29AF0008FE3EF /* AudioRecorder */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1A323E3B2DB8C75700C4AAC3 /* Exceptions for "AudioRecorder" folder in "AudioRecorder" target */,
+			);
 			path = AudioRecorder;
 			sourceTree = "<group>";
 		};
@@ -416,6 +429,7 @@
 				DEVELOPMENT_TEAM = 9RREDA5672;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AudioRecorder/Info.plist;
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "需要使用麥克風來錄製音訊";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -445,6 +459,7 @@
 				DEVELOPMENT_TEAM = 9RREDA5672;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AudioRecorder/Info.plist;
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "需要使用麥克風來錄製音訊";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
