@@ -1,5 +1,6 @@
 import UIKit
 import DataStore
+import NetworkService
 
 @MainActor
 final class TranscriptionService: @unchecked Sendable {

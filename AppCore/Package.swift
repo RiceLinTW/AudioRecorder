@@ -23,6 +23,10 @@ let package = Package(
       name: "AudioService",
       targets: ["AudioService"]
     ),
+    .library(
+      name: "NetworkService",
+      targets: ["NetworkService"]
+    ),
   ],
   dependencies: [
     .package(url: "https://github.com/weichsel/ZIPFoundation.git", .upToNextMajor(from: "0.9.0"))
@@ -35,6 +39,7 @@ let package = Package(
       dependencies: [
         "DataStore",
         "AudioService",
+        "NetworkService",
         "ZIPFoundation"
       ]
     ),
@@ -44,6 +49,10 @@ let package = Package(
     ),
     .target(
       name: "AudioService",
+      dependencies: ["DataStore"]
+    ),
+    .target(
+      name: "NetworkService",
       dependencies: ["DataStore"]
     ),
     .testTarget(
@@ -57,6 +66,10 @@ let package = Package(
     .testTarget(
       name: "AudioServiceTests",
       dependencies: ["AudioService"]
+    ),
+    .testTarget(
+      name: "NetworkServiceTests",
+      dependencies: ["NetworkService"]
     ),
   ]
 )

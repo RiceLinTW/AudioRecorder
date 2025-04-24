@@ -1,7 +1,8 @@
 import Foundation
 import ZIPFoundation
+import DataStore
 
-enum HephAPIError: LocalizedError {
+public enum HephAPIError: LocalizedError {
   case invalidURL
   case networkError(Error)
   case invalidResponse
@@ -11,7 +12,7 @@ enum HephAPIError: LocalizedError {
   case fileError(String)
   case zipError(String)
   
-  var errorDescription: String? {
+  public var errorDescription: String? {
     switch self {
       case .invalidURL:
         "無效的 URL"
@@ -33,7 +34,7 @@ enum HephAPIError: LocalizedError {
   }
 }
 
-class HephAPI {
+public class HephAPI {
   private let baseURL = Config.hephBaseURL
   private var apiKey: String
   private var accessToken: String? {
@@ -41,7 +42,7 @@ class HephAPI {
     set { UserDefaults.standard.set(newValue, forKey: "accessToken") }
   }
   
-  init(apiKey: String) {
+  public init(apiKey: String) {
     self.apiKey = apiKey
   }
   
@@ -73,48 +74,48 @@ class HephAPI {
     }
   }
   
-  struct TranscriptionTask: Codable {
-    let data: TranscriptionData
-    let statusCode: String
-    let message: String
+  public struct TranscriptionTask: Codable {
+    public let data: TranscriptionData
+    public let statusCode: String
+    public let message: String
     
-    struct TranscriptionData: Codable {
-      let task_id: String
+    public struct TranscriptionData: Codable {
+      public let task_id: String
     }
   }
 
-  struct TranscriptionStatus: Codable {
-    let data: TranscriptionStatusData
-    let statusCode: String
-    let message: String
+  public struct TranscriptionStatus: Codable {
+    public let data: TranscriptionStatusData
+    public let statusCode: String
+    public let message: String
     
-    struct TranscriptionStatusData: Codable {
-      let status: String
-      let progress: String
-      let exception_traceback: String
-      let text: String
-      let filePaths: TranscriptionFilePath
+    public struct TranscriptionStatusData: Codable {
+      public let status: String
+      public let progress: String
+      public let exception_traceback: String
+      public let text: String
+      public let filePaths: TranscriptionFilePath
         
-      struct TranscriptionFilePath: Codable {
-        let audio_path: String?
-        let srt_path: String?
-        let tsv_path: String?
-        let txt_path: String?
-        let vtt_path: String?
-        let archive_path: String?
+      public struct TranscriptionFilePath: Codable {
+        public let audio_path: String?
+        public let srt_path: String?
+        public let tsv_path: String?
+        public let txt_path: String?
+        public let vtt_path: String?
+        public let archive_path: String?
       }
     }
   }
   
-  struct TranscriptionResult {
-    let text: String
-    let segments: [TranscriptionSegment]
+  public struct TranscriptionResult {
+    public let text: String
+    public let segments: [TranscriptionSegment]
   }
   
-  struct TranscriptionSegment: Codable {
-    let start: Double
-    let end: Double
-    let text: String
+  public struct TranscriptionSegment: Codable {
+    public let start: Double
+    public let end: Double
+    public let text: String
   }
   
   public func login() async throws {
@@ -142,7 +143,7 @@ class HephAPI {
     }
     
     print("📡 登入回應: HTTP \(httpResponse.statusCode)")
-    print(String(data: data, encoding: .utf8) ?? "?????")
+
     do {
       let loginResponse = try JSONDecoder().decode(LoginResponse.self, from: data)
       
@@ -167,7 +168,7 @@ class HephAPI {
     }
   }
   
-  func uploadAudio(fileURL: URL, model: String = "small") async throws -> TranscriptionTask {
+  public func uploadAudio(fileURL: URL, model: String = "small") async throws -> TranscriptionTask {
     if accessToken == nil {
       try await login()
     }
@@ -209,7 +210,7 @@ class HephAPI {
     
     request.httpBody = data
     
-    print("🌐 發送請求到 Heph API...")
+    print("🌐 發送請求到 Heph API...: \(url.absoluteString)")
     let (responseData, response) = try await URLSession.shared.data(for: request)
 
     guard let httpResponse = response as? HTTPURLResponse else {
@@ -234,7 +235,7 @@ class HephAPI {
     }
   }
   
-  func checkStatus(taskID: String) async throws -> TranscriptionStatus {
+  public func checkStatus(taskID: String) async throws -> TranscriptionStatus {
     if accessToken == nil {
       try await login()
     }
@@ -268,7 +269,7 @@ class HephAPI {
     }
   }
   
-  func getResult(taskID: String) async throws -> TranscriptionResult {
+  public func getResult(taskID: String) async throws -> TranscriptionResult {
     if accessToken == nil {
       try await login()
     }
@@ -398,4 +399,4 @@ class HephAPI {
     
     return Double(hourMinute[0] * 3600 + hourMinute[1] * 60 + seconds) + Double(millis) / 1000.0
   }
-}
+} 

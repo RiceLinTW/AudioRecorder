@@ -1,4 +1,5 @@
 import Foundation
+import NetworkService
 
 @MainActor
 final class AuthService: ObservableObject {
