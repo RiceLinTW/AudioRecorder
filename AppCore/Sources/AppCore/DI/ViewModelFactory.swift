@@ -1,5 +1,6 @@
 import Foundation
 import DataStore
+import AudioService
 
 @MainActor
 class ViewModelFactory {

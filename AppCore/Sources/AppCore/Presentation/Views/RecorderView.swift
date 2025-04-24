@@ -1,6 +1,6 @@
 import SwiftUI
 import DataStore
-import DataStore
+import AudioService
 
 public struct RecorderView: View {
   @StateObject private var viewModel: RecorderViewModel

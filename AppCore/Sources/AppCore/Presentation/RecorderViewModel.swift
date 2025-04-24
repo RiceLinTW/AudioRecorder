@@ -3,6 +3,7 @@ import UIKit
 import AVFoundation
 import SwiftData
 import DataStore
+import AudioService
 
 @MainActor
 class RecorderViewModel: ObservableObject {

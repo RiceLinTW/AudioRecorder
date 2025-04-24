@@ -3,11 +3,11 @@ import AVFoundation
 import DataStore
 
 #if os(iOS)
-class DefaultAudioRecorderRepository: AudioRecorderRepository {
+public class DefaultAudioRecorderRepository: AudioRecorderRepository {
   private var audioRecorder: AVAudioRecorder?
   private var currentRecordingURL: URL?
   
-  init() {
+  public init() {
     setupAudioSession()
   }
   
@@ -25,7 +25,7 @@ class DefaultAudioRecorderRepository: AudioRecorderRepository {
     }
   }
     
-  func startRecording() async throws {
+  public func startRecording() async throws {
     let audioSession = AVAudioSession.sharedInstance()
     
     // 檢查麥克風權限
@@ -97,7 +97,7 @@ class DefaultAudioRecorderRepository: AudioRecorderRepository {
     }
   }
   
-  func stopRecording() -> AudioRecording? {
+  public func stopRecording() -> AudioRecording? {
     guard let url = currentRecordingURL else { return nil }
     
     let duration = audioRecorder?.currentTime ?? 0
@@ -108,29 +108,31 @@ class DefaultAudioRecorderRepository: AudioRecorderRepository {
     return AudioRecording(url: url, duration: duration)
   }
   
-  func deleteRecording(_ recording: AudioRecording) throws {
+  public func deleteRecording(_ recording: AudioRecording) throws {
     try FileManager.default.removeItem(at: recording.url)
   }
   
-  func getRecordingURL() -> URL? {
+  public func getRecordingURL() -> URL? {
     return currentRecordingURL
   }
 }
 #else
-class DefaultAudioRecorderRepository: AudioRecorderRepository {
-  func startRecording() throws {
+public class DefaultAudioRecorderRepository: AudioRecorderRepository {
+  public init() {}
+  
+  public func startRecording() throws {
     throw NSError(domain: "AudioRecorder", code: -1, userInfo: [NSLocalizedDescriptionKey: "Recording is not supported on this platform"])
   }
   
-  func stopRecording() -> AudioRecording? {
+  public func stopRecording() -> AudioRecording? {
     return nil
   }
   
-  func deleteRecording(_ recording: AudioRecording) throws {
+  public func deleteRecording(_ recording: AudioRecording) throws {
     throw NSError(domain: "AudioRecorder", code: -1, userInfo: [NSLocalizedDescriptionKey: "Recording is not supported on this platform"])
   }
   
-  func getRecordingURL() -> URL? {
+  public func getRecordingURL() -> URL? {
     return nil
   }
 }
