@@ -24,7 +24,7 @@ public enum OllamaAPIError: LocalizedError {
 }
 
 public class OllamaAPI {
-  private let baseURL = "https://8d53-118-169-19-211.ngrok-free.app"
+  private let baseURL = "{your_ollama_host_url}"
   private let session: URLSession
   
   public init() {
@@ -47,6 +47,11 @@ public class OllamaAPI {
   }
   
   public func generateSummary(text: String, model: String = "llama2:7b") async throws -> String {
+    guard baseURL != "{your_ollama_host_url}" else {
+      print("❌ Ollama API baseURL 尚未設定")
+      throw OllamaAPIError.apiError("Ollama API baseURL 尚未設定")
+    }
+
     print("🤖 開始生成摘要...")
     let url = URL(string: "\(baseURL)/api/generate")!
     var request = URLRequest(url: url)
