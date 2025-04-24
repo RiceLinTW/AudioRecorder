@@ -18,7 +18,7 @@ public struct RecorderView: View {
   
   public var body: some View {
     NavigationStack {
-      ZStack {
+      VStack(spacing: 0) {
         // 錄音列表
         RecordingListView(
           recordings: viewModel.recordings,
@@ -50,11 +50,9 @@ public struct RecorderView: View {
         )
         
         // 底部控制器
-        VStack {
-          Spacer()
-          RecordingControlView(viewModel: viewModel)
-            .padding()
-        }
+        RecordingControlView(viewModel: viewModel)
+          .padding()
+          .background(Color(.systemBackground))
       }
       .navigationTitle("錄音")
       .toolbar {
