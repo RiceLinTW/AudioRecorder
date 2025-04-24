@@ -3,7 +3,7 @@ import UIKit
 @MainActor
 final class TranscriptionService: @unchecked Sendable {
   private let recordingStore: RecordingStoreActor
-  private let hephAPI = HephAPI()
+  private let authService = AuthService.shared
   private let ollamaAPI = OllamaAPI()
   private var backgroundTask: UIBackgroundTaskIdentifier = .invalid
   
@@ -12,6 +12,12 @@ final class TranscriptionService: @unchecked Sendable {
   }
   
   func transcribe(recording: RecordingModel) async throws {
+    guard let hephAPI = authService.getAPI() else {
+      throw NSError(domain: "TranscriptionService", code: -1, userInfo: [
+        NSLocalizedDescriptionKey: "請先登入 Heph 服務"
+      ])
+    }
+    
     // 開始背景任務
     backgroundTask = UIApplication.shared.beginBackgroundTask { [weak self] in
       guard let self else { return }

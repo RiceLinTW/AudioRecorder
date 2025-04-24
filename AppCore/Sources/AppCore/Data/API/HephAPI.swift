@@ -35,9 +35,14 @@ enum HephAPIError: LocalizedError {
 
 class HephAPI {
   private let baseURL = Config.hephBaseURL
+  private var apiKey: String
   private var accessToken: String? {
     get { UserDefaults.standard.string(forKey: "accessToken") }
     set { UserDefaults.standard.set(newValue, forKey: "accessToken") }
+  }
+  
+  init(apiKey: String) {
+    self.apiKey = apiKey
   }
   
   struct LoginResponse: Codable {
@@ -118,10 +123,10 @@ class HephAPI {
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    request.setValue(Config.apiKey, forHTTPHeaderField: "x-api-key")
+    request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
     
-    let email = ProcessInfo.processInfo.environment["HEPH_EMAIL"] ?? ""
-    let password = ProcessInfo.processInfo.environment["HEPH_PASSWORD"] ?? ""
+    let email = UserDefaults.standard.string(forKey: "hephEmail") ?? ""
+    let password = UserDefaults.standard.string(forKey: "hephPassword") ?? ""
     
     let body = [
       "email": email,
@@ -156,7 +161,7 @@ class HephAPI {
   }
   
   private func authorizedRequest(_ request: inout URLRequest) {
-    request.setValue(Config.apiKey, forHTTPHeaderField: "x-api-key")
+    request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
     if let token = accessToken {
       request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
     }

@@ -2,8 +2,10 @@ import SwiftUI
 
 public struct RecorderView: View {
   @StateObject private var viewModel: RecorderViewModel
+  @StateObject private var authService = AuthService.shared
   @State private var showError = false
   @State private var errorMessage: String?
+  @State private var showLoginSheet = false
   
   public init() {
     let repository = DefaultAudioRecorderRepository()
@@ -55,6 +57,23 @@ public struct RecorderView: View {
         }
       }
       .navigationTitle("錄音")
+      .toolbar {
+        ToolbarItem(placement: .navigationBarTrailing) {
+          if authService.isLoggedIn {
+            HStack(spacing: 8) {
+              Text(authService.username ?? "")
+                .foregroundColor(.secondary)
+              Button("登出") {
+                authService.logout()
+              }
+            }
+          } else {
+            Button("登入") {
+              showLoginSheet = true
+            }
+          }
+        }
+      }
       .alert("錯誤", isPresented: $showError) {
         Button("確定") {
           errorMessage = nil
@@ -69,6 +88,9 @@ public struct RecorderView: View {
           errorMessage = error.localizedDescription
           showError = true
         }
+      }
+      .sheet(isPresented: $showLoginSheet) {
+        LoginView()
       }
     }
   }
