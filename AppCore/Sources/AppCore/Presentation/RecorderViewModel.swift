@@ -85,6 +85,9 @@ class RecorderViewModel: ObservableObject {
         do {
           _ = try await recordingStore.save(recording)
           await loadRecordings()
+          // 重置當前錄音
+          currentRecording = nil
+          recordingTime = 0
         } catch {
           self.error = RecorderError.recording(error.localizedDescription)
         }
@@ -92,6 +95,7 @@ class RecorderViewModel: ObservableObject {
     }
     isRecording = false
     timer?.invalidate()
+    timer = nil
     
     // 結束背景任務
     if backgroundTask != .invalid {
