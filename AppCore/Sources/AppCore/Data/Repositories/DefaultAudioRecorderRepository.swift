@@ -28,27 +28,51 @@ class DefaultAudioRecorderRepository: AudioRecorderRepository {
     let audioSession = AVAudioSession.sharedInstance()
     
     // 檢查麥克風權限
-    switch await audioSession.recordPermission {
-    case .undetermined:
-      let granted = await withCheckedContinuation { continuation in
-        audioSession.requestRecordPermission { granted in
-          continuation.resume(returning: granted)
+    if #available(iOS 17.0, *) {
+      let application = AVAudioApplication.shared
+      switch application.recordPermission {
+      case .undetermined:
+        let granted = await withCheckedContinuation { continuation in
+          AVAudioApplication.requestRecordPermission { granted in
+            continuation.resume(returning: granted)
+          }
         }
+        if !granted {
+          throw RecorderError.recording("未獲得麥克風權限")
+        }
+      case .denied:
+        throw RecorderError.recording("麥克風權限已被拒絕，請在設定中開啟")
+      case .granted:
+        break
+      @unknown default:
+        throw RecorderError.recording("未知的麥克風權限狀態")
       }
-      if !granted {
-        throw RecorderError.recording("未獲得麥克風權限")
+    } else {
+      switch audioSession.recordPermission {
+      case .undetermined:
+        let granted = await withCheckedContinuation { continuation in
+          audioSession.requestRecordPermission { granted in
+            continuation.resume(returning: granted)
+          }
+        }
+        if !granted {
+          throw RecorderError.recording("未獲得麥克風權限")
+        }
+      case .denied:
+        throw RecorderError.recording("麥克風權限已被拒絕，請在設定中開啟")
+      case .granted:
+        break
+      @unknown default:
+        throw RecorderError.recording("未知的麥克風權限狀態")
       }
-    case .denied:
-      throw RecorderError.recording("麥克風權限已被拒絕，請在設定中開啟")
-    case .granted:
-      break
-    @unknown default:
-      throw RecorderError.recording("未知的麥克風權限狀態")
     }
     
     // 啟動音頻會話
-    try setupAudioSession()
-    try audioSession.setActive(true)
+    do {
+      try audioSession.setActive(true)
+    } catch {
+      throw RecorderError.recording("啟動音頻會話失敗：\(error.localizedDescription)")
+    }
     
     let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     let audioFilename = documentsPath.appendingPathComponent("\(UUID().uuidString).wav")
@@ -64,8 +88,12 @@ class DefaultAudioRecorderRepository: AudioRecorderRepository {
       AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
     ]
     
-    audioRecorder = try AVAudioRecorder(url: audioFilename, settings: settings)
-    audioRecorder?.record()
+    do {
+      audioRecorder = try AVAudioRecorder(url: audioFilename, settings: settings)
+      audioRecorder?.record()
+    } catch {
+      throw RecorderError.recording("建立錄音器失敗：\(error.localizedDescription)")
+    }
   }
   
   func stopRecording() -> AudioRecording? {
