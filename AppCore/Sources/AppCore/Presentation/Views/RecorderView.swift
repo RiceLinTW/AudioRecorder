@@ -68,8 +68,10 @@ public struct RecorderView: View {
               }
             }
           } else {
-            Button("登入") {
+            Button {
               showLoginSheet = true
+            } label: {
+              Text("login", bundle: .module)
             }
           }
         }
@@ -95,3 +97,11 @@ public struct RecorderView: View {
     }
   }
 } 
+
+#Preview("繁體中文") {
+  RecorderView()
+    .environment(\.locale, .init(identifier: "zh-Hant"))
+}
+#Preview("English") {
+  RecorderView()
+}

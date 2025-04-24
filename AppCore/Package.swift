@@ -41,6 +41,9 @@ let package = Package(
         "AudioService",
         "NetworkService",
         "ZIPFoundation"
+      ],
+      resources: [
+        .process("Localize")
       ]
     ),
     .target(
