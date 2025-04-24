@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ricer: View {
+struct LoginView: View {
   @Environment(\.dismiss) private var dismiss
   @StateObject private var authService = AuthService.shared
   @State private var email = ""

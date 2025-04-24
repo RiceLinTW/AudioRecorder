@@ -42,6 +42,13 @@ class RecorderViewModel: ObservableObject {
   private func loadRecordings() async {
     do {
       recordings = try await recordingStore.fetchAll()
+      // 如果有正在轉錄的錄音，設定定時更新
+      if recordings.contains(where: { $0.progress != nil }) {
+        Task {
+          try await Task.sleep(for: .seconds(1))
+          await loadRecordings()
+        }
+      }
     } catch {
       self.error = RecorderError.recording(error.localizedDescription)
     }
@@ -96,6 +103,11 @@ class RecorderViewModel: ObservableObject {
   func startTranscription(_ recording: RecordingModel) async throws {
     isTranscribing = true
     defer { isTranscribing = false }
+    
+    // 立即開始更新錄音列表
+    Task {
+      await loadRecordings()
+    }
     
     try await transcriptionService.transcribe(recording: recording)
     await loadRecordings()

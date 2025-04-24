@@ -44,11 +44,12 @@ final class TranscriptionService: @unchecked Sendable {
     // 等待轉錄完成
     var status = try await hephAPI.checkStatus(taskID: task.data.task_id)
     while status.data.status != "Completed" {
-      try await Task.sleep(for: .seconds(5))
-      status = try await hephAPI.checkStatus(taskID: task.data.task_id)
-      print("📊 轉錄進度: \(status.data.progress)")
       recording.progress = status.data.progress
       try await recordingStore.update(recording)
+      
+      try await Task.sleep(for: .seconds(2))
+      status = try await hephAPI.checkStatus(taskID: task.data.task_id)
+      print("📊 轉錄進度: \(status.data.progress)")
     }
     
     // 取得結果
