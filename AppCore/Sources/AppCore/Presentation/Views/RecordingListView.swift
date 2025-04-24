@@ -18,7 +18,7 @@ struct RecordingListView: View {
         ContentUnavailableView(
           "還沒有錄音",
           systemImage: "waveform",
-          description: Text("點擊下方的錄音按鈕開始錄製")
+          description: Text("recorder.empty.description", bundle: .module)
         )
         .symbolEffect(.bounce, value: recordings.isEmpty)
       } else {
@@ -78,8 +78,10 @@ struct RecordingListView: View {
       }
     }
     .alert("錯誤", isPresented: $showError) {
-      Button("確定") {
+      Button {
         errorMessage = nil
+      } label: {
+        Text("ok", bundle: .module)
       }
     } message: {
       if let message = errorMessage {
@@ -131,7 +133,7 @@ struct RecordingItemView: View {
       if let summary = recording.summary {
         VStack(alignment: .leading, spacing: 8) {
           HStack {
-            Text("重點摘要")
+            Text("recorder.summary.title", bundle: .module)
               .font(.caption)
               .fontWeight(.medium)
               .foregroundStyle(.secondary)
@@ -187,7 +189,7 @@ struct RecordingItemView: View {
             HStack(spacing: 4) {
               ProgressView()
                 .controlSize(.small)
-              Text("摘要生成中...")
+              Text("recorder.summarizing", bundle: .module)
                 .font(.caption)
             }
           } else {
@@ -242,11 +244,13 @@ struct RecordingItemView: View {
       }
       Button("取消", role: .cancel) {}
     } message: {
-      Text("確定要刪除這個錄音嗎？")
+      Text("recorder.delete.confirmation", bundle: .module)
     }
     .alert("錯誤", isPresented: $showError) {
-      Button("確定") {
+      Button {
         errorMessage = nil
+      } label: {
+        Text("ok", bundle: .module)
       }
     } message: {
       if let message = errorMessage {

@@ -23,11 +23,17 @@ struct SummaryEditView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
           ToolbarItem(placement: .cancellationAction) {
-            Button("取消", action: onCancel)
+            Button {
+              onCancel()
+            } label: {
+              Text("cancel", bundle: .module)
+            }
           }
           ToolbarItem(placement: .confirmationAction) {
-            Button("儲存") {
+            Button {
               onSave(editedSummary)
+            } label: {
+              Text("save", bundle: .module)
             }
           }
         }

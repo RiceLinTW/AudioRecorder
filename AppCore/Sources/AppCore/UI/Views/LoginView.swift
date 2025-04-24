@@ -29,7 +29,7 @@ struct LoginView: View {
           if isLoading {
             ProgressView()
           } else {
-            Text("登入")
+            Text("login", bundle: .module)
           }
         }
         .disabled(email.isEmpty || password.isEmpty || apiKey.isEmpty || isLoading)
@@ -38,7 +38,7 @@ struct LoginView: View {
       .alert("登入失敗", isPresented: $showError) {
         Button("確定", role: .cancel) { }
       } message: {
-        Text(authService.error ?? "未知錯誤")
+        Text(authService.error ?? String(localized: "error.unknown", bundle: .module))
       }
     }
   }

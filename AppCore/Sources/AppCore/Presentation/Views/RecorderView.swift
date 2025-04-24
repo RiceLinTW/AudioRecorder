@@ -63,8 +63,10 @@ public struct RecorderView: View {
             HStack(spacing: 8) {
               Text(authService.username ?? "")
                 .foregroundColor(.secondary)
-              Button("登出") {
+              Button {
                 authService.logout()
+              } label: {
+                Text("logout", bundle: .module)
               }
             }
           } else {
@@ -77,8 +79,10 @@ public struct RecorderView: View {
         }
       }
       .alert("錯誤", isPresented: $showError) {
-        Button("確定") {
+        Button {
           errorMessage = nil
+        } label: {
+          Text("ok", bundle: .module)
         }
       } message: {
         if let message = errorMessage {
