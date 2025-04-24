@@ -2,24 +2,24 @@ import Foundation
 import SwiftData
 
 @Model
-final class RecordingModel: @unchecked Sendable {
-  var id: UUID
-  var title: String
-  var createdAt: Date
-  var duration: TimeInterval
-  var filename: String
-  var transcript: String?
-  var summary: String?
-  var progress: String?
-  var isSummarizing: Bool = false
+public final class RecordingModel: @unchecked Sendable {
+  public var id: UUID
+  public var title: String
+  public var createdAt: Date
+  public var duration: TimeInterval
+  public var filename: String
+  public var transcript: String?
+  public var summary: String?
+  public var progress: String?
+  public var isSummarizing: Bool = false
   
-  var filePath: String {
+  public var filePath: String {
     FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
       .appendingPathComponent(filename)
       .path
   }
   
-  init(
+  public init(
     id: UUID = UUID(),
     title: String,
     createdAt: Date = Date(),

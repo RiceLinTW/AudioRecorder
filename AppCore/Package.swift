@@ -15,6 +15,10 @@ let package = Package(
       name: "AppCore",
       targets: ["AppCore"]
     ),
+    .library(
+      name: "DataStore",
+      targets: ["DataStore"]
+    ),
   ],
   dependencies: [
     .package(url: "https://github.com/weichsel/ZIPFoundation.git", .upToNextMajor(from: "0.9.0"))
@@ -24,11 +28,22 @@ let package = Package(
     // Targets can depend on other targets in this package and products from dependencies.
     .target(
       name: "AppCore",
-      dependencies: ["ZIPFoundation"]
+      dependencies: [
+        "DataStore",
+        "ZIPFoundation"
+      ]
+    ),
+    .target(
+      name: "DataStore",
+      dependencies: []
     ),
     .testTarget(
       name: "AppCoreTests",
       dependencies: ["AppCore"]
+    ),
+    .testTarget(
+      name: "DataStoreTests",
+      dependencies: ["DataStore"]
     ),
   ]
 )

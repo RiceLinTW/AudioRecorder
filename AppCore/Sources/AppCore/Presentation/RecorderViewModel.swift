@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import AVFoundation
 import SwiftData
+import DataStore
 
 @MainActor
 class RecorderViewModel: ObservableObject {

@@ -1,5 +1,6 @@
 import Foundation
 import AVFoundation
+import DataStore
 
 #if os(iOS)
 class DefaultAudioRecorderRepository: AudioRecorderRepository {
