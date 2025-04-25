@@ -1,7 +1,7 @@
-import XCTest
-import Testing
 @testable import AudioService
 @testable import DataStore
+import Testing
+import XCTest
 
 final class AudioServiceTests {
   @Test func testRecordingError() {
@@ -23,4 +23,4 @@ final class AudioServiceTests {
     let error = RecorderError.transcription("Test error")
     XCTAssertEqual(error.errorDescription, "轉錄錯誤：Test error")
   }
-} 
+}
